@@ -1,0 +1,46 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+# Load Titanic dataset
+df = pd.read_csv('https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv')
+
+# Display first 5 rows
+print(df.head())
+
+# Basic info about the dataset
+print(df.info())
+
+# Summary statistics
+print(df.describe())
+
+# Check for missing values
+print(df.isnull().sum())
+
+# Value counts for 'Sex' and 'Embarked'
+print(df['Sex'].value_counts())
+print(df['Embarked'].value_counts())
+
+# Fill missing Age values with the median
+df['Age'].fillna(df['Age'].median(), inplace=True)
+
+# Fill missing Embarked values with the most frequent value
+df['Embarked'].fillna(df['Embarked'].mode()[0], inplace=True)
+
+# Drop 'Cabin' column (too many missing values)
+df.drop('Cabin', axis=1, inplace=True)
+
+# Encode 'Sex' column (male → 0, female → 1)
+df['Sex'] = df['Sex'].map({'male': 0, 'female': 1})
+
+# One-hot encode 'Embarked' column, dropping the first dummy to avoid multicollinearity
+df = pd.get_dummies(df, columns=['Embarked'], drop_first=True)
+
+# Standardize the 'Fare' column
+scaler = StandardScaler()
+df['Fare'] = scaler.fit_transform(df[['Fare']])
+
+# Drop unnecessary columns
+df.drop(['Name', 'Ticket', 'PassengerId'], axis=1, inplace=True)
+
+# Display the final processed dataset
+print(df.head())
